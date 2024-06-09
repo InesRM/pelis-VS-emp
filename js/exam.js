@@ -34,7 +34,7 @@ $(function () {
  * el evento submit y cancelar su envio al servidor.  Una vez recogidos los datos se debe resetear
  * el formulario.  Los datos deben ser validados antes de ser mostrados en la tabla.
  */
-
+import productions from "../data/productions.js";
 window.addEventListener("load", function () {
   // Esperar a que la página cargue completamente
   console.log("Inicio");
@@ -47,6 +47,7 @@ window.addEventListener("load", function () {
   const deleteButton = document.getElementById("delete");
   const randomButton = document.getElementById("random");
   const selectButton = document.getElementById("selected");
+  const searchButton = document.getElementById("button-addon2");
 
   createButton.addEventListener("click", function () {
     const title = document.getElementById("validationDefault01");
@@ -74,23 +75,23 @@ window.addEventListener("load", function () {
     newRow.appendChild(newSinopsis);
 
     resultsTableBody.appendChild(newRow);
-    if (validateForm()) {
+    // if (validateForm()) {
       document.getElementsByName("film")[0].value = "";
-    }
+    // }
   });
 
-  validateForm = function () {
-    isValid = true;
-    document.querySelectorAll("input[required]").forEach(function (input) {
-      if (input.value === "") {
-        input.classList.add("is-invalid");
-        isValid = false;
-      } else {
-        input.classList.remove("is-invalid");
-        input.classList.add("is-valid");
-      }
-    });
-  };
+  // validateForm = function () {
+  //   isValid = true;
+  //   document.querySelectorAll("input[required]").forEach(function (input) {
+  //     if (input.value === "") {
+  //       input.classList.add("is-invalid");
+  //       isValid = false;
+  //     } else {
+  //       input.classList.remove("is-invalid");
+  //       input.classList.add("is-valid");
+  //     }
+  //   });
+  // };
 
   // --- MOSTRAR LOS DATOS DE LA FILA SELECCIONADA EN EL TEXTAREA ---
   resultsTableBody.addEventListener("click", function (event) {
@@ -178,6 +179,78 @@ window.addEventListener("load", function () {
           alert('Error al cargar los datos de la película.');
         });
     });
+
+    //Buscador de películas
+
+    const search= document.getElementById("search");
+    const results= document.getElementById("selected-film");
+    searchButton.addEventListener("click", function () {
+      const searchValue = search.value;
+
+      if (!searchValue){
+        alert("Por favor, introduce un título de película.");
+        return;
+      }
+      fetch("../php/peliculas.php?title=" + searchValue)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Error HTTP! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((pelicula) => {
+          results.innerHTML = JSON.stringify(pelicula, null, 4);
+          //En la tabla también
+          const newRow = document.createElement("tr");
+          const newTitle = document.createElement("td");
+          const newNationality = document.createElement("td");
+          const newPublication = document.createElement("td");
+          const newSinopsis = document.createElement("td");
+          newTitle.textContent = pelicula.title;
+          newNationality.textContent = pelicula.nationality;
+          newPublication.textContent = pelicula.publication;
+          newSinopsis.textContent = pelicula.synopsis;
+          newRow.appendChild(newTitle);
+          newRow.appendChild(newNationality);
+          newRow.appendChild(newPublication);
+          newRow.appendChild(newSinopsis);
+          resultsTableBody.appendChild(newRow);
+
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+          alert('El título no existe en la base.');
+        });
+    });
+
+    //Eliminar película
+
+    deleteButton.addEventListener("click", function () {
+      const selectedRow = resultsTableBody.querySelector("tr.selected");
+      if (!selectedRow) {
+        alert("Por favor, selecciona una película.");
+        return;
+      }
+      const title = selectedRow.cells[0].textContent;
+      fetch("../php/peliculas.php?title=" + title, {
+        method: 'DELETE',
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`Error HTTP! status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((pelicula) => {
+          alert('Película eliminada correctamente.');
+          selectedRow.remove();
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+          alert('Error al eliminar la película.');
+        });
+    });
+
   });
 
 

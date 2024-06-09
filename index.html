@@ -15,6 +15,11 @@
     <h1>Pelis</h1>
   </header>
   <main class="container">
+    <!-- Espacio para un búscador de películas dinámico -->
+    <div class="input-group mb-3">
+      <input type="text" class="form-control" id="search" placeholder="Search" aria-label="Search" aria-describedby="button-addon2">
+      <button class="btn btn-outline-secondary" type="button" id="button-addon2">Search</button>
+    </div>
 
     <form name="film" class="row g-3 needs-validation" novalidate>
       <div class="col-md-4">
@@ -113,9 +118,10 @@
     Launch demo modal
   </button>
   -->
+  <script type="module" src="./data/productions.js"></script>
   <script src="js/bootstrap.bundle.min.js"></script>
   <script src="js/jquery-3.7.1.min.js"></script>
-  <script src="js/exam.js"></script>
+  <script type="module" src="js/exam.js"></script>
 </body>
 
 </html>
