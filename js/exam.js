@@ -48,6 +48,7 @@ window.addEventListener("load", function () {
   const randomButton = document.getElementById("random");
   const selectButton = document.getElementById("selected");
   const searchButton = document.getElementById("button-addon2");
+  const sendButton = document.getElementById("send"); //Botón para guardar los datos en el archivo json
 
   createButton.addEventListener("click", function () {
     const title = document.getElementById("validationDefault01");
@@ -221,6 +222,9 @@ window.addEventListener("load", function () {
           console.error('Error:', error);
           alert('El título no existe en la base.');
         });
+
+      
+
     });
 
     //Eliminar película
@@ -251,7 +255,101 @@ window.addEventListener("load", function () {
         });
     });
 
+    //Guardar película Y PINTARLO EN LA TABLA
+
+    // sendButton.addEventListener("click", function () {
+    //   const title = document.getElementById("validationDefault01").value;
+    //   const description = document.getElementById("validationDefault02").value;
+    //   const publication = document.getElementById("validationDefault03").value;
+    //   const synopsis = document.getElementById("validationDefault04").value;
+
+    //   if (!title || !description || !publication || !synopsis) {
+    //     alert("Por favor, rellena todos los campos.");
+    //     return;
+    //   }
+
+    //   fetch("../php/saveFilm.php", {
+    //     method: 'POST',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify({ title, description, publication, synopsis }),
+    //   })
+    //     .then((response) => {
+    //       if (!response.ok) {
+    //         throw new Error(`Error HTTP! status: ${response.status}`);
+    //       }
+    //       return response.text();
+    //     })
+    //     .then((pelicula) => {
+    //       alert('Película guardada correctamente.');
+    //       document.getElementById("validationDefault01").value = '';
+    //       document.getElementById("validationDefault02").value = '';
+    //       document.getElementById("validationDefault03").value = '';
+    //       document.getElementById("validationDefault04").value = '';
+
+    //       const newRow = document.createElement("tr");
+    //       const newTitle = document.createElement("td");
+    //       const newNationality = document.createElement("td");
+    //       const newPublication = document.createElement("td");
+    //       const newSinopsis = document.createElement("td");
+    //       newTitle.textContent = pelicula.title;
+    //       newNationality.textContent = pelicula.national
+    //       newPublication.textContent = pelicula.publication;
+    //       newSinopsis.textContent = pelicula.synopsis;
+    //       newRow.appendChild(newTitle);
+    //       newRow.appendChild(newNationality);
+    //       newRow.appendChild(newPublication);
+    //       newRow.appendChild(newSinopsis);
+    //       resultsTableBody.appendChild(newRow);
+        
+    //     });
+
+    //   });
+  //SIMPLIFICADO
+    sendButton.addEventListener("click", function () {
+      const title = document.getElementById("validationDefault01").value;
+      const description = document.getElementById("validationDefault02").value;
+      const publication = document.getElementById("validationDefault03").value;
+      const synopsis = document.getElementById("validationDefault04").value;
+  
+      if (!title || !description || !publication || !synopsis) {
+          alert("Por favor, rellena todos los campos.");
+          return;
+      }
+  
+      fetch("../php/saveFilm.php", {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ title, description, publication, synopsis }),
+      })
+          .then(response => {
+              if (!response.ok) {
+                  throw new Error(`Error HTTP! status: ${response.status}`);
+              }
+              return response.json(); // Expect JSON from server
+          })
+          .then(data => { 
+              if (data.success) { 
+                  alert('Película guardada o actualizada correctamente.');
+                  // ... (Clear form fields and add row to table) ...
+                  document.getElementById("validationDefault01").value = '';
+                  document.getElementById("validationDefault02").value = '';
+                  document.getElementById("validationDefault03").value = '';
+                  document.getElementById("validationDefault04").value = '';
+              } else {
+                  alert('Error al guardar la película: ' + data.error);
+              }
+          })
+          .catch(error => {
+              console.error('Error:', error);
+              alert('Error al guardar la película. Por favor, inténtelo de nuevo.');
+          });
   });
+  
+          
 
-
+});
 // Fin de la función anónima que sirve como punto de entrada de JavaScript

@@ -49,7 +49,6 @@ header('Content-Type: application/json');
 // }
 
 
-
 $productionsJson = file_get_contents('../data/productions.json');
 $productions = json_decode($productionsJson, true);
 
@@ -61,11 +60,25 @@ if (isset($_GET['title'])) {
             exit;
         }
     }
-    // Si no se encuentra la película, devolver un error
+    $filteredProductions = array_filter($productions, function ($production) use ($title) {
+        return strpos(strtolower($production['title']), strtolower($title)) !== false;
+    });
+    if (empty($filteredProductions)) {
+        http_response_code(404);
+        echo json_encode(['error' => 'Película no encontrada'], JSON_PRETTY_PRINT);
+    } else {
+       echo json_encode($filteredProductions, JSON_PRETTY_PRINT);
+   }
+}elseif (empty($productions)) {
+    // Si no se encuentra la película, devolver un error 404
+
     http_response_code(404);
     echo json_encode(['error' => 'Película no encontrada'], JSON_PRETTY_PRINT);
-} else {
+}
+ else {
     echo json_encode($productions, JSON_PRETTY_PRINT);
 }
+
+
 ?>
 
